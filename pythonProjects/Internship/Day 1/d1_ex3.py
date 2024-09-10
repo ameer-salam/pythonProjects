@@ -1,3 +1,6 @@
+#Add comments to your code explaining what each line does.
+
+
 #question 1
 #question -  Write a Python program that prints "Hello, World!" to the console
 print("Hello World!")
