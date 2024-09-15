@@ -9,5 +9,6 @@ print("End!\n\n")
 
 #adding by replacement
 arraY[2] = 6
+print("The updated array is : ")
 for i in arraY:
     print(i)
