@@ -1,5 +1,7 @@
 #library files
 import tkinter as tk
+from tkinter import messagebox
+from tkinter import PhotoImage
 
 #variables
 aspect_ratio=2/3
@@ -22,6 +24,29 @@ def maintain_aspect_ratio(event):
         # Adjust the width based on height
         win1.geometry(f"{desired_width}x{height}")
 
+
+#Adding new key
+def add_key():
+    win1.withdraw()
+
+    #create new window instance
+    win_add_key = tk.Tk()
+    #set window title
+    win_add_key.title("Add New Key")
+
+    #set window size
+    win_add_key.geometry("400x600")
+    #maintain aspect ratio when resized
+    win_add_key.bind("<Configure>", maintain_aspect_ratio)
+
+    #set background colour
+    win_add_key.config(bg="#272729")
+    a = int(input("1/0"))
+    if a==1:
+        win_add_key.destroy()
+        win1.deiconify()
+
+
 #create main window
 win1 = tk.Tk()
 
@@ -33,8 +58,19 @@ win1.geometry("400x600")
 #maintain aspect ratio when resized
 win1.bind("<Configure>", maintain_aspect_ratio)
 
+icon = PhotoImage(file=f"icon_v1_nobg.png")
 #set background colour
-win1.config(bg="white")
+win1.config(bg="#121212")
+win1.iconphoto(False, icon)
+
+
+
+#MENUE BAR 
+#create menu bar
+menu_home = tk.Menu(win1)
+
+menu_home.add_command(label="Add Key", command=add_key)
+win1.config(menu=menu_home)
 
 #start the tinkter loop
 win1.mainloop()
