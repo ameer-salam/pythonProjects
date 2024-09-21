@@ -1,7 +1,7 @@
 #library files
 import tkinter as tk
 from tkinter import messagebox
-from tkinter import PhotoImage
+from PIL import Image, ImageTk
 
 #variables
 aspect_ratio=2/3
@@ -30,7 +30,7 @@ def add_key():
     win1.withdraw()
 
     #create new window instance
-    win_add_key = tk.Tk()
+    win_add_key = tk.Toplevel()
     #set window title
     win_add_key.title("Add New Key")
 
@@ -52,13 +52,38 @@ win1 = tk.Tk()
 
 #set window title
 win1.title("2FA by Ameer Salam")
+icon_image = Image.open("icon_v1_nobg.png")  # Load the image with transparent background
+icon_image = icon_image.resize((150, 150), Image.Resampling.LANCZOS)  # Use LANCZOS for resizing
+
+# Convert the Pillow image to PhotoImage for Tkinter
+icon = ImageTk.PhotoImage(icon_image)
 
 #set window size
 win1.geometry("400x600")
+
+# Make the window resizable
+win1.resizable(True, True)
+
+# Create a frame to allow the image to expand
+frame = tk.Frame(win1, bg="#121212")
+frame.pack(expand=True, fill=tk.BOTH)
+
+# Display the image in a label, using pack with expand options
+logo_image = tk.Label(frame, image=icon, bg="#121212")
+logo_image.pack(expand=True)
+
+# Place image at the top center
+logo_image.pack(side=tk.TOP, pady=10)
+
+# Place image at the bottom
+#logo_image.pack(side=tk.BOTTOM, pady=10)
+
+
 #maintain aspect ratio when resized
 win1.bind("<Configure>", maintain_aspect_ratio)
 
-icon = PhotoImage(file=f"icon_v1_nobg.png")
+#icon = PhotoImage(file=f"icon_v1_nobg.png")
+
 #set background colour
 win1.config(bg="#121212")
 win1.iconphoto(False, icon)
@@ -68,7 +93,6 @@ win1.iconphoto(False, icon)
 #MENUE BAR 
 #create menu bar
 menu_home = tk.Menu(win1)
-
 menu_home.add_command(label="Add Key", command=add_key)
 win1.config(menu=menu_home)
 
