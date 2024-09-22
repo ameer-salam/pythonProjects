@@ -1,7 +1,8 @@
 #library files
 import tkinter as tk
 from tkinter import messagebox
-from PIL import Image, ImageTk
+from tkinter import PhotoImage
+import sqlite3
 
 #variables
 aspect_ratio=2/3
@@ -24,6 +25,24 @@ def maintain_aspect_ratio(event):
         # Adjust the width based on height
         win1.geometry(f"{desired_width}x{height}")
 
+# Create or connect to the database
+conn = sqlite3.connect("2fa_keys.db")
+cursor = conn.cursor()
+
+# Create table to store keys
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS keys (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    key TEXT NOT NULL
+)
+''')
+#core function
+def add_key_to_db(key: str):
+    cursor.execute("INSERT INTO keys (key) VALUES (?)", (key,))
+    conn.commit()
+    print("Key stored in database.")
+
+
 
 #Adding new key
 def add_key():
@@ -38,12 +57,30 @@ def add_key():
     win_add_key.geometry("400x600")
     #maintain aspect ratio when resized
     win_add_key.bind("<Configure>", maintain_aspect_ratio)
+    icon_add_key = PhotoImage(file=f"add_key_v1_nobg.png")
+    #set background colour
+    win_add_key.iconphoto(False, icon_add_key)
+    key_label=tk.Label(win_add_key, text="Enter or paste your Secret keys : ", bg="#272729", fg="white")
+    key_label.pack(pady=20)
+    key_entry = tk.Entry(win_add_key, width=40)
+    key_entry.pack(pady=10)
 
+    def key_input():
+        secret_key=key_entry.get()
+        print(f"The entered key is : {secret_key}")
+        add_key_to_db(secret_key)
+        key_entry.delete(0, tk.END)
+    
+    submit_button=tk.Button(win_add_key, text="Submit", command=key_input)
+    submit_button.pack(pady=20)
+    
     #set background colour
     win_add_key.config(bg="#272729")
     a = int(input("1/0"))
     if a==1:
         win_add_key.destroy()
+        win1.geometry("400x600")
+        win1.bind("<Configure>", maintain_aspect_ratio)
         win1.deiconify()
 
 
@@ -52,38 +89,13 @@ win1 = tk.Tk()
 
 #set window title
 win1.title("2FA by Ameer Salam")
-icon_image = Image.open("icon_v1_nobg.png")  # Load the image with transparent background
-icon_image = icon_image.resize((150, 150), Image.Resampling.LANCZOS)  # Use LANCZOS for resizing
-
-# Convert the Pillow image to PhotoImage for Tkinter
-icon = ImageTk.PhotoImage(icon_image)
 
 #set window size
 win1.geometry("400x600")
-
-# Make the window resizable
-win1.resizable(True, True)
-
-# Create a frame to allow the image to expand
-frame = tk.Frame(win1, bg="#121212")
-frame.pack(expand=True, fill=tk.BOTH)
-
-# Display the image in a label, using pack with expand options
-logo_image = tk.Label(frame, image=icon, bg="#121212")
-logo_image.pack(expand=True)
-
-# Place image at the top center
-logo_image.pack(side=tk.TOP, pady=10)
-
-# Place image at the bottom
-#logo_image.pack(side=tk.BOTTOM, pady=10)
-
-
 #maintain aspect ratio when resized
 win1.bind("<Configure>", maintain_aspect_ratio)
 
-#icon = PhotoImage(file=f"icon_v1_nobg.png")
-
+icon = PhotoImage(file=f"icon_v1_nobg.png")
 #set background colour
 win1.config(bg="#121212")
 win1.iconphoto(False, icon)
@@ -93,6 +105,7 @@ win1.iconphoto(False, icon)
 #MENUE BAR 
 #create menu bar
 menu_home = tk.Menu(win1)
+
 menu_home.add_command(label="Add Key", command=add_key)
 win1.config(menu=menu_home)
 
