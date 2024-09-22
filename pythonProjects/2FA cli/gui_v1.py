@@ -109,5 +109,32 @@ menu_home = tk.Menu(win1)
 menu_home.add_command(label="Add Key", command=add_key)
 win1.config(menu=menu_home)
 
+
+
+conn = sqlite3.connect("2fa_keys.db")
+cursor = conn.cursor()
+
+# Query to fetch all keys from the database
+cursor.execute("SELECT * FROM keys")
+
+# Fetch all the rows from the 'keys' table
+all_keys = cursor.fetchall()
+
+# Check if there are any keys stored
+if all_keys:
+    print("Stored 2FA keys:")
+    countk=0
+    for row in all_keys:
+        row_count = cursor.fetchone()[0]
+    print(f"Available keys are : {countk}")
+else:
+    print("No keys found.")
+
+# Close the connection
+#conn.close()
+
+
+
+
 #start the tinkter loop
 win1.mainloop()
