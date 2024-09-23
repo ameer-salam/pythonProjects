@@ -3,6 +3,25 @@ import sqlite3
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import hashlib
 import base64
+import pyotp
+import time
+
+#corefunction to generate the OPT
+# Decode the secret key (assuming it's base32 or base64 encoded)
+def opt_gen(secret_key):
+    try:
+        decoded_key = base64.b32encode(secret_key.encode())
+    except Exception as e:
+        print("Failed to decode the secret key:", e)
+        return None
+
+    # Create a TOTP object using the decoded key
+    totp = pyotp.TOTP(decoded_key)
+
+    # Generate the current OTP
+    current_otp = totp.now()
+
+    return current_otp
 
 # Path to the user database
 user_db = "user.db"
@@ -36,7 +55,7 @@ def add_new_key(key):
     if key_insertion_status==True:
         os.system('cls')
         print("Displaying the Existing Keys: ")
-    return
+        display_keys(key)
 
 #function to display the existing keys
 def display_keys(key):
@@ -51,26 +70,35 @@ def display_keys(key):
     else:
         os.system("cls")  # Clear the console
         print(f"The Keys existing are:")
-        conn = sqlite3.connect(user_db_keys)
-        cursor = conn.cursor()
+
         cursor.execute('''SELECT * FROM user_keys''')
         rows = cursor.fetchall()
 
         if rows:
-            print("Keys in the database:")
-            for row in rows:
-                provider=decrypt_content(row[1], key)
-                secret_key=decrypt_content(row[2], key)
-                print(f"ID: {row[0]}, Secret Key: {secret_key}\t\t Provider: {provider}")
-
-            optio=input("Add new Key : y/n")
-            if optio=='y' or optio=='Y' or optio==1:
-                add_new_key(key)
+            optio = ""
+            while not (optio == 'exit'):
+                os.system('cls')  # Clear the screen at the beginning of each loop
+                print("Keys in the database:")
+                
+                # Loop through and display each key with OTP
+                for row in rows:
+                    secret_key = decrypt_content(row[1], key)
+                    provider = decrypt_content(row[2], key)
+                    otp = opt_gen(secret_key)
+                    print(f"ID: {row[0]}, OTP: {otp}\t\t Provider: {provider}")
+                
+                time.sleep(30)
+                optio = input("To Enter New Keys type Y/y: \nType 'exit' to EXIT or press Enter to refresh:")
+                
+                if optio == 'exit':
+                    break
+                elif optio.lower() == 'y':
+                    add_new_key(key)
         else:
             print("No keys found in the database.")
-        
-        conn.close()
-
+    
+    conn.close()
+    display_keys(key)
 
 #function to check if the key database if not existing. if existing then connect
 def check_key_db():
@@ -193,7 +221,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
