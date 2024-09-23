@@ -88,12 +88,6 @@ def display_keys(key):
                     print(f"ID: {row[0]}, OTP: {otp}\t\t Provider: {provider}")
                 
                 time.sleep(30)
-                optio = input("To Enter New Keys type Y/y: \nType 'exit' to EXIT or press Enter to refresh:")
-                
-                if optio == 'exit':
-                    break
-                elif optio.lower() == 'y':
-                    add_new_key(key)
         else:
             print("No keys found in the database.")
     
