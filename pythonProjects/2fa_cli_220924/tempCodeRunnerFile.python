@@ -1,0 +1,52 @@
+#libraries
+import os
+import sqlite3
+
+#variables
+user_db = "user.db"
+
+#functions
+#function to check if user exists
+def get_user():
+    if not os.path.exists(user_db):
+        return False
+    else:
+        return True
+    
+#create a db if nothing exists
+def create_new_user():
+    conn=sqlite3.connect(user_db)
+    cursor=conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS user(
+                   id INTEGER PRIMARY KEY AUTOINCREMENT,
+                   encrypted_username TEXT NOT NULL)''')
+    conn.commit()
+    pass_counter=0
+    password_verified=False
+    while not password_verified:
+        if pass_counter>0:
+            print("Password did not match! Renter details")
+        user_name=input("User name          : ")
+        password1=input("Enter password     : ")
+        password2=input("Renter password    : ")
+        pass_counter+=1
+        if(password1==password2):
+            password_verified = True
+
+    
+        conn.close()
+        print("User Created")
+
+
+def main():
+    print("welcome to OpenAuth")
+    user=get_user()
+    if user == True:
+        key=input("Enter the Master Key : ")
+    else:
+        print("Create a new account")
+        create_new_user()
+
+
+if __name__ == "__main__":
+    main()    

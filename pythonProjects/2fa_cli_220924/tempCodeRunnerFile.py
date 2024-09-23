@@ -1,2 +1,1 @@
-ating one...")
-        create_db()
+    user_name=input("Enter user name: ")
