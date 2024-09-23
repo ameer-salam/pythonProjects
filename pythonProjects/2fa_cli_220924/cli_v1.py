@@ -15,6 +15,36 @@ def get_user():
 def derive_key(password):
     return hashlib.sha256(password.encode()).digest()
 
+#function to log into database
+def login(username, e_username, key):
+    conn = sqlite3.connect(user_db)
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS user_key(
+                   id INTEGER PRIMARY KEY AUTOINCREMENT,
+                   secret_key TEXT NOT NULL,
+                   provider TEXT NOT NULL)''')
+    conn.commit()
+    cursor.execute("SELECT COUNT(*) FROM user_key")
+    count=cursor.fetchone()[0]
+    if count==0:
+        print("No keys Exist!")
+        #adding new key
+        os.system('cls')
+        sec_key=input("Enter Secret key : ")
+        sec_key_provider=input("Enter provider : ")
+        sec_key_encrypted=encrypt_content(sec_key, key)
+        sec_key_provider_encrypted=encrypt_content(sec_key_provider, key)
+        try:
+            cursor.execute("INSERT INTO user_key(secret_key, provider) VALUES(?,?)", (sec_key_encrypted, sec_key_provider_encrypted))
+            conn.commit()
+            print("Key added Successfully")
+        except sqlite3.IntegrityError:
+            print("Error occured during key insertion")
+        finally:
+            conn.close()
+    conn.close()
+    return count
+
 # Function to encrypt content using AESGCM
 def encrypt_content(content, password):
     key = derive_key(password)
@@ -40,9 +70,10 @@ def decrypt_content(encrypted_content, password):
 def create_new_user():
     conn = sqlite3.connect(user_db)
     cursor = conn.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS user(
-                      id INTEGER PRIMARY KEY AUTOINCREMENT,
-                      encrypted_username TEXT NOT NULL)''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS user (
+                    encrypted_username TEXT PRIMARY KEY,
+                    twofa_secret TEXT,
+                    provider TEXT)''')
     conn.commit()
     
     password_verified = False
@@ -59,8 +90,13 @@ def create_new_user():
     # Encrypt the username with the password
     encrypted_username = encrypt_content(user_name, password2)
     
+    # You need to provide values for twofa_secret and provider (or pass None if not available)
+    twofa_secret = ""  # For now, we're leaving it empty
+    provider = ""      # For now, we're leaving it empty
+    
     try:
-        cursor.execute("INSERT INTO user (encrypted_username) VALUES (?)", (encrypted_username,))
+        cursor.execute("INSERT INTO user (encrypted_username, twofa_secret, provider) VALUES (?, ?, ?)", 
+                       (encrypted_username, twofa_secret, provider))
         conn.commit()
         print("User account created successfully.\nRe-run the program to get started")
     except sqlite3.IntegrityError:
@@ -68,19 +104,21 @@ def create_new_user():
     finally:
         conn.close()
 
+
 # Function to print usernames in the database (encrypted)
 def print_usernames():
     conn = sqlite3.connect(user_db)
     cursor = conn.cursor()
-    cursor.execute("SELECT id, encrypted_username FROM user")
+    cursor.execute("SELECT encrypted_username FROM user")
     rows = cursor.fetchall()
 
     if rows:
         for row in rows:
-            print(f"Stored Username(Encrypted): {row[1]}")
-        return rows[0][1]  # Return the first encrypted username
+            print(f"Stored Username(Encrypted): {row[0]}")  # row[0] for the only selected column
+        return rows[0][0]  # Return the first encrypted username
     
     conn.close()
+
 
 
 # Main function
@@ -97,7 +135,11 @@ def main():
             key = input("Enter the Master Key to decript the Database: ")
             decrypted_username = decrypt_content(encrypted_user, key)
             if decrypt_content:
-                print(f"Decrypted Username: {decrypted_username}")
+                os.system('cls')
+                print(f"Logged into: {decrypted_username}")
+                user_secret_key_db = f"{decrypted_username}_keys.db"
+                key_count=login(decrypted_username, key, user_secret_key_db)
+                key_disp(key_count)
             else:
                 print("Failed to decrypt the username. Incorrect key or corrupted data.")
         else:
