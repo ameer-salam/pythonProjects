@@ -54,8 +54,12 @@ def add_new_key(key):
     key_insertion_status = insert_into_keys_db(encrypted_secret_key, encrypted_provider)
     if key_insertion_status==True:
         os.system('cls')
+        status=int(input("Enter another Key?\nIf yes! enter 1 else 0"))
+        if status==1:
+            add_new_key(key)
         print("Displaying the Existing Keys: ")
         display_keys(key)
+    
 
 #function to display the existing keys
 def display_keys(key):
@@ -86,7 +90,6 @@ def display_keys(key):
                     provider = decrypt_content(row[2], key)
                     otp = opt_gen(secret_key)
                     print(f"ID: {row[0]}, OTP: {otp}\t\t Provider: {provider}")
-                
                 time.sleep(30)
         else:
             print("No keys found in the database.")
