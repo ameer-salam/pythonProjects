@@ -5,8 +5,31 @@ import time
 #variables
 users_db="users.db"
 
-def create_new_user():
+def enter_user_mail():  
+    user_mail=str(input("Enter user mail     : "))
+    return user_mail
+
+def enter_validate_userName(): #validate user name
+    user_name=str(input("Enter the user name : "))
+    length = int(len(user_name))
+    lower=user_name.islower()
+    upper=user_name.isupper()
+    if(length<4):
+        print("User Name must be at leat four characters longI\n")
+        enter_validate_userName()
+    return user_name
     
+def create_new_user_screen():
+    print("\n\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n----------------------------------------------------------------------------\033[1m\033[7mCREATE NEW USER\033[0m---------------------------------------------------------------------------\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+
+def create_new_user():
+    os.system("cls")
+    top_screen()
+    create_new_user_screen()
+    user_name=enter_validate_userName()
+    user_mail=enter_user_mail()
+    print(f"The user name is : {user_name}\nThe user mail is : {user_mail}")
+
 
 def top_screen():
     print("""----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -34,9 +57,9 @@ def find_user():
         print("d.-----       \033[01mDocumentation\033[0m             -----------------------------------      4      ------------------------------------------------------------------------------")
         print("e.-----       \033[01mApplication Page\033[0m          -----------------------------------      5      ------------------------------------------------------------------------------")
         print("f.-----       \033[01mExit Application\033[0m          -----------------------------------      6      ------------------------------------------------------------------------------")
-        choice_1=int(input("Enter Your Choice (1-6) : "))
+        choice_1=int(input("\n\033[01mEnter Your Choice (1-6) : \033[0m"))
         if(choice_1 == 1): #create a new user
-            create_new_user()
+            users=create_new_user()
 
         #if(choice_1 == 2): #find existing user database
 
