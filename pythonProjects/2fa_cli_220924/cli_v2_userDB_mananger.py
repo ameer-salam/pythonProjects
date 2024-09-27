@@ -1,31 +1,46 @@
-from sqlalchemy import create_engine, ForeignKey, Column, String, Integer, CHAR
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, Column, Integer, String
+#from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base
 
+#to define a base class
 Base = declarative_base()
 
-class users_list(Base):
+class User_list(Base):
     __tablename__ = "users"
 
-    user_no=Column("user_no", Integer, primary_key=True)
-    user_name=Column("user_names", String, nullable=False)
-    user_keys_db=Column("user_keys_path", String, nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_name = Column(String(50), nullable=False)
+    user_mail = Column(String(100), nullable=False, unique=True)
+    user_key_db = Column(String(255), nullable=False)
 
-    def __init__(self, user_no, user_names, user_keys_db):
-        self.user_no = user_no
-        self.user_names = user_names
-        self.user_keys_db = user_keys_db
+    def __repr__(self):
+        print(f"<User_list(id={self.id}, username = {self.user_name}, mail = {self.user_mail}, path = {self.user_key_db})>")
+        #return f"<User_list(id={self.id}, username = {self.user_name}, mail = {self.user_mail}, path = {self.user_key_db})>"
 
-    #def _repr__(self):
+    def add_new_user(user_name, user_mail):
+        new_user = User_list(user_name=user_name, user_mail=user_mail, user_key_db="NOW DUMB")
+        session.add(new_user)
+        session.commit()
+        print(f"New user {user_name} added!")
 
-engine = create_engine("sqlite:///users_list.db", echo=True) #connects the Database
+    def create_db():
+        engine = create_engine('sqlite:///C:/Users/salam/OneDrive/Documents/Projects/pythonProjects/pythonProjects/2fa_cli_220924/OpenAuth_v121_users_list.db', echo=True)
+        #create the table in the database
+        Base.metadata.create_all(engine)
 
-Base.metadata.create_all(bind=engine)
+        #create a session to interract with the database
+        Session = sessionmaker(bind=engine)
+        session = Session()
 
-Session = sessionmaker(bind=engine)
-session = Session()
 
-user=users_list(1, "Ameer", "KEys_exAmPle1")
-session.add(user)
-session.commit()
-print(user)
+
+
+#insert a new user 
+#new_user = User_list(user_name="ameer salam", user_mail="ameer@mail", user_key_db="wassup bro")
+#session.add(new_user)
+#session.commit
+
+def printAll():
+    users = session.query(User_list).all()
+    for user in users:
+        User_list.__repr__()
