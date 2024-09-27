@@ -60,11 +60,11 @@ def top_screen():
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------""")
     
 def find_user():
-    if (os.path.exists("C:/Users/salam/OneDrive/Documents/Projects/pythonProjects/pythonProjects/2fa_cli_220924/OpenAuth_v121_users_list.db")) == False: ##no user
-        db_manage_prg.User_list.create_db()
+    if db_manage_prg.check_user_exists == False: ##no user
+        ##db_manage_prg.User_list.create_db()
         no_user_screen()
         choice_1=int(input("\n\033[01mEnter Your Choice (1-6) : \033[0m"))
-        if(choice_1 == 1): #create a new user
+        if(choice_1 == 1): #create a new user  
             users=create_new_user()
         if(choice_1 == 2): #find existing user database
             path=input("Enter the path!")
@@ -77,7 +77,8 @@ def find_user():
         if(choice_1 == 6):
             os.system("cls")
             os.system("exit")
-    #else:
+    else:
+        print("Yenlaa sisya!")
         
 
 

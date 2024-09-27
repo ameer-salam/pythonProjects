@@ -1,6 +1,11 @@
+import os
 from sqlalchemy import create_engine, Column, Integer, String
 #from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, declarative_base
+
+
+def check_user_exists():
+    return os.path.exists("C:/Users/salam/OneDrive/Documents/Projects/pythonProjects/pythonProjects/2fa_cli_220924/OpenAuth_v121_users_list.db")
 
 #to define a base class
 Base = declarative_base()
@@ -23,17 +28,6 @@ class User_list(Base):
         session.commit()
         print(f"New user {user_name} added!")
 
-    def create_db():
-        engine = create_engine('sqlite:///C:/Users/salam/OneDrive/Documents/Projects/pythonProjects/pythonProjects/2fa_cli_220924/OpenAuth_v121_users_list.db', echo=True)
-        #create the table in the database
-        Base.metadata.create_all(engine)
-
-        #create a session to interract with the database
-        Session = sessionmaker(bind=engine)
-        session = Session()
-
-
-
 
 #insert a new user 
 #new_user = User_list(user_name="ameer salam", user_mail="ameer@mail", user_key_db="wassup bro")
@@ -44,3 +38,25 @@ def printAll():
     users = session.query(User_list).all()
     for user in users:
         User_list.__repr__()
+
+
+"""
+if (os.path.exists("C:/Users/salam/OneDrive/Documents/Projects/pythonProjects/pythonProjects/2fa_cli_220924/OpenAuth_v121_users_list.db"))==False:
+        print("Existing user")
+        engine = create_engine('sqlite:///C:/Users/salam/OneDrive/Documents/Projects/pythonProjects/pythonProjects/2fa_cli_220924/OpenAuth_v121_users_list.db', echo=True)
+        #create the table in the database
+        Base.metadata.create_all(engine)
+
+        #create a session to interract with the database
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        return False
+    else:
+        #create the table in the database
+        Base.metadata.create_all(engine)
+
+        #create a session to interract with the database
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        return True
+"""
