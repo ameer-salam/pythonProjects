@@ -60,8 +60,8 @@ def top_screen():
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------""")
     
 def find_user():
-    if db_manage_prg.check_user_exists == False: ##no user
-        ##db_manage_prg.User_list.create_db()
+    if db_manage_prg.check_user_exists() == False: ##no user
+        #db_manage_prg.connect_to_users_db()
         no_user_screen()
         choice_1=int(input("\n\033[01mEnter Your Choice (1-6) : \033[0m"))
         if(choice_1 == 1): #create a new user  

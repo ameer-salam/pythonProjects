@@ -5,7 +5,21 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 
 def check_user_exists():
-    return os.path.exists("C:/Users/salam/OneDrive/Documents/Projects/pythonProjects/pythonProjects/2fa_cli_220924/OpenAuth_v121_users_list.db")
+    if (os.path.exists("C:/Users/salam/OneDrive/Documents/Projects/pythonProjects/pythonProjects/2fa_cli_220924/OpenAuth_v121_users_list.db"))==False:
+        print("Existing user")
+        engine = create_engine('sqlite:///C:/Users/salam/OneDrive/Documents/Projects/pythonProjects/pythonProjects/2fa_cli_220924/OpenAuth_v121_users_list.db', echo=True)
+        #create the table in the database
+        Base.metadata.create_all(engine)
+
+        #create a session to interract with the database
+        return False
+    else:
+        Base.metadata.create_all(engine)
+        #create a session to interract with the database
+        return True
+Session = sessionmaker(bind=engine)
+session = Session()
+
 
 #to define a base class
 Base = declarative_base()
